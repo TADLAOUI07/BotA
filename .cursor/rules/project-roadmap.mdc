@@ -1,0 +1,25 @@
+---
+description: Keep project work aligned with the bot roadmap
+alwaysApply: true
+---
+
+# Project Roadmap Context
+
+Before planning or implementing significant changes in this project, read `Bot/ROADMAP.md`.
+
+Treat sprint completion as a gate: do not move to the next sprint until the current sprint's Definition of Done and documented software tests are satisfied, unless the roadmap is explicitly updated.
+
+Keep work aligned with the roadmap order:
+
+1. Secure the existing bot first.
+2. Stabilize Gmail support and Telegram validation.
+3. Clean Shopify CRM and consent handling.
+4. Make emailing production-ready.
+5. Add business analytics.
+6. Integrate Ads MCP.
+7. Add AI marketing recommendations.
+8. Add AI email campaign design.
+9. Add continuous optimization.
+10. Test, document, and prepare delivery.
+
+Do not add Ads MCP or AI campaign automation before the security, consent, CRM, and emailing foundations are reliable.
