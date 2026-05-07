@@ -185,10 +185,13 @@ function sendApprovedReply(emailId) {
 /**
  * Crée un brouillon au lieu d'envoyer directement.
  * @param {string} emailId
+ * @param {Object} [options]
+ * @param {boolean} [options.completePending] - If true, mark the support thread done and remove pending state.
  * @returns {boolean} Succès
  */
-function createDraftReply(emailId) {
+function createDraftReply(emailId, options) {
   try {
+    options = options || {};
     logEvent('DRAFT_DEBUG', 'v2026-05-05-1755 start createDraftReply emailId=' + emailId);
     supportDebug_('createDraftReply start. emailId=' + emailId);
     clearLastSupportActionError_();
@@ -234,9 +237,16 @@ function createDraftReply(emailId) {
       subject: pending.subject,
       threadUrl: threadUrl
     }));
-    logEvent('DRAFTED', 'Draft created for ' + pending.sender);
-    logEvent('DRAFT_DEBUG', 'createDraftReply success. Pending kept for other buttons.');
-    supportDebug_('createDraftReply success. Pending kept. Check Gmail > Brouillons.');
+    if (options.completePending) {
+      completeSupportPending_(emailId, pending);
+      logEvent('DRAFTED', 'Draft created and pending completed for ' + pending.sender);
+      logEvent('DRAFT_DEBUG', 'createDraftReply success. Pending completed.');
+      supportDebug_('createDraftReply success. Pending completed. Check Gmail > Brouillons.');
+    } else {
+      logEvent('DRAFTED', 'Draft created for ' + pending.sender);
+      logEvent('DRAFT_DEBUG', 'createDraftReply success. Pending kept for other buttons.');
+      supportDebug_('createDraftReply success. Pending kept. Check Gmail > Brouillons.');
+    }
     return true;
   } catch (e) {
     setLastSupportActionError_('Erreur Gmail brouillon: ' + e.message);
@@ -256,15 +266,12 @@ function ignoreEmail(emailId) {
   if (!pending) return false;
 
   try {
-    var thread = GmailApp.getThreadById(pending.threadId);
-    removeLabel_(thread, CONFIG.LABELS.PENDING);
-    applyLabel_(thread, CONFIG.LABELS.DONE);
+    completeSupportPending_(emailId, pending);
   } catch (e) {
     logEvent('IGNORE_ERROR', e.message);
     return false;
   }
 
-  removePendingReply(emailId);
   logEvent('IGNORED', 'Email from ' + pending.sender + ' ignored');
   return true;
 }
@@ -427,6 +434,13 @@ function getPendingReply(emailId) {
 function removePendingReply(emailId) {
   var store = PropertiesService.getScriptProperties();
   store.deleteProperty('pending_' + emailId);
+}
+
+function completeSupportPending_(emailId, pending) {
+  var thread = GmailApp.getThreadById(pending.threadId);
+  removeLabel_(thread, CONFIG.LABELS.PENDING);
+  applyLabel_(thread, CONFIG.LABELS.DONE);
+  removePendingReply(emailId);
 }
 
 function setLastSupportActionError_(message) {

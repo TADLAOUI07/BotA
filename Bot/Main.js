@@ -251,7 +251,7 @@ function handleCallbackQuery_(callbackQuery) {
     var emailId = resolveSupportCallbackEmailId_(draftToken);
     logEvent('CALLBACK_DEBUG', 'draft resolved emailId=' + emailId);
     supportDebug_('Draft token resolved. emailId=' + emailId);
-    var success = createDraftReply(emailId);
+    var success = createDraftReply(emailId, { completePending: true });
     logEvent('CALLBACK_DEBUG', 'draft createDraftReply success=' + success);
     supportDebug_('createDraftReply returned success=' + success);
     if (success) {
@@ -262,9 +262,11 @@ function handleCallbackQuery_(callbackQuery) {
         '✏️ <b>Brouillon créé dans Gmail</b>\n\n'
         + 'Où écrire/modifier: Gmail → Brouillons.\n'
         + (draftInfo.threadUrl ? 'Lien conversation: <a href="' + escapeHtml(draftInfo.threadUrl) + '">ouvrir dans Gmail</a>\n' : '')
-        + '\nLe message Telegram original reste visible. Tu peux encore utiliser un autre bouton si besoin.'
+        + '\nLe thread est marqué traité. Le brouillon reste modifiable dans Gmail.'
       );
       incrementStat('drafted');
+      incrementStat('processed');
+      removeSupportCallbackToken_(draftToken);
     } else {
       var draftError = getLastSupportActionError_();
       sendTelegramMessage(

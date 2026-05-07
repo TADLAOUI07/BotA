@@ -61,6 +61,8 @@ Fichiers: `Gmail.js`, `Main.js`
 
 - `ignoreEmail()` retourne maintenant un succes/echec.
 - Les boutons `ignore` et `edit` affichent une erreur claire si l'email est deja traite ou introuvable.
+- Le bouton `Draft` cree un brouillon Gmail, retire `DD_BOT_PENDING`, applique `DD_BOT_DONE` et supprime le `pending_*`.
+- Le bouton `Edit` cree un brouillon mais garde le `pending_*` pour permettre une validation ou un autre choix ensuite.
 
 ## Tests effectues (local / statique)
 
@@ -70,6 +72,7 @@ Fichiers: `Gmail.js`, `Main.js`
 - Verification statique: les callbacks support utilisent des tokens courts compatibles avec la limite Telegram de 64 octets.
 - Verification statique: anciens boutons avec emailId direct restent resolvables.
 - Verification statique: `initialize()` refuse explicitement une URL `/dev`.
+- Verification statique: `Draft` finalise le pending, tandis que `Edit` le garde ouvert.
 - Verification lint/diagnostics: aucune erreur detectee sur les fichiers modifies.
 
 ## Tests Apps Script deja observes
